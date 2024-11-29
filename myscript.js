@@ -1,20 +1,14 @@
-const url = 'https://moviesminidatabase.p.rapidapi.com/movie/imdb_id/byTitle/%7Bname%7D/';
-const options = {
-	method: 'GET',
-	headers: {
-		'x-rapidapi-key': '031c0154bemsh5323774fbe1bec1p1e9fa8jsnd949c31431eb',
-		'x-rapidapi-host': 'moviesminidatabase.p.rapidapi.com'
-	}
-};
 
-try {
-	const response = await fetch(url, options);
-	const result = await response.text();
-	display(result);
-
-} catch (error) {
-	console.error(error);
-}
-function display(result){
-    document.getElementById("p1").innerHTML=result;
-}
+async function getText(text) {
+    let p = "http://www.omdbapi.com/?apikey=f4741886&t="+text;
+    let x = await fetch(p);
+    let y = JSON.parse(await x.text());
+    let l="";
+    console.log(typeof(y));
+    for(var k in y){
+        //console.log(k + ': ' + y[k] +'<br>');
+        if(k!='Ratings')
+        l +=`${k}  ': '  ${y[k]} '<br>'`;
+    }
+    document.getElementById("p1").innerHTML=l;
+  }
