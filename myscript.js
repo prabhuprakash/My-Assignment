@@ -7,7 +7,7 @@ async function getText(text) {
     console.log(typeof(y));
     for(var k in y){
         //console.log(k + ': ' + y[k] +'<br>');
-        if(k!='Ratings')
+        if(k!='Ratings' && k!='Plot' && k!='Poster')
         l +=`${k}  ': '  ${y[k]} '<br>'`;
     }
     document.getElementById("p1").innerHTML=l;
