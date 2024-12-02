@@ -1,4 +1,4 @@
-#<ins>**Project Description**</ins><br/>
+#Project Description<br/>
   This project is about a static web page which fetches data using api calls from a movie database and showing results based on the search key word and deploying the website using docker.<br/>
 #<ins>**Docker deployment**</ins><br/>
     Steps for docker deployment<br/>
