@@ -1,16 +1,26 @@
 body {
     font-family: Arial, sans-serif;
-    background-image: url("./image1.jpg");
-    background-color: #f4f4f4;
-    background-size: cover;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    flex-direction: column;
+    background-color: #d6dce1ce;
+    color: #333;
 }
+#class1 {
+        display: flex;
+        justify-content:center; /* Centers the links horizontally */
+        align-items: center; /* Vertically centers the content (optional) */
+        height: 10vh; /* Full viewport height */
+        margin: 0; /* Remove default margin */
+        
+    }
+
+img {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    width: 100px;
+  }
+
 a {
 
     color: #101417;
@@ -24,10 +34,11 @@ a:hover {
 }
 
 input[type="text"] {
+    background-color: #d6dce1ce;   
     padding: 8px;
     margin: 10px 0;
     border-radius: 4px;
-    border: 1px solid #ccc;
+    border: 1px solid #000000;
     width: 200px;
     font-size: 16px;
 }
@@ -36,7 +47,7 @@ button {
     padding: 10px 15px;
     background-color: #007BFF;
     color: white;
-    border: none;
+    border: 1px solid black;
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
@@ -52,4 +63,9 @@ p {
     margin-left: 100px;
     font-size: 18px;
     color: #000000;
+}
+#p1 {
+    display: grid;
+    column-gap: 40px;
+    grid-template-columns: auto auto auto auto;
 }
