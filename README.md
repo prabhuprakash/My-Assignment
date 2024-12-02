@@ -1,22 +1,41 @@
-#<ins>**Project Description**</ins><br/>
-  This project is about a static web page which fetches data using api calls from a movie database and showing results based on the search key word and deploying the website using docker.<br/>
-#<ins>**Docker deployment**</ins><br/>
-    Steps for docker deployment<br/>
-    ##**1.Dockerfile creation**<br/>
-            for this project i used nginx light weight webserver as the base image.<br/>
-                FROM  nginx:alpine<br/>
-            copying the contents of the static web page files  to the nginx default directory<br/>
-                COPY . /usr/share/nginx/html<br/>
-            port number is mentioned through which the website is accessed.<br/>
-                EXPOSE 80<br/>
-    ##**2.Building the Docker image**<br/>
-            docker build -t myapp .<br/>
-              here myapp is the image name.<br/>
-    ##**3.Running the docker container**<br/>
-            docker run -d -p 8080:80 myapp<br/>
-              -d is for running the container in detached mode<br/>
-              -p is for mapping the host and container port numbers<br/>
-              here myapp is the created image name<br/>
-    ##**4.accessing the website**<br/>
-            open the link below in the web browser for opening locally<br/>
-              http://localhost:8080 <br/>
+Static Web Page with Movie Database API and Docker Deployment
+This project involves creating a static web page that:
+
+Fetches data using API calls from a movie database.
+Displays results based on a search keyword.
+Is deployed using Docker for efficient hosting.
+Docker Deployment
+Steps for Docker Deployment
+1. Dockerfile Creation
+For this project, we use the lightweight Nginx web server as the base image.
+
+dockerfile
+Copy code
+FROM nginx:alpine
+# Copying the contents of the static web page files to the Nginx default directory
+COPY . /usr/share/nginx/html
+# Specifying the port through which the website is accessed
+EXPOSE 80
+2. Building the Docker Image
+Use the following command to build the Docker image:
+
+bash
+Copy code
+docker build -t myapp .
+Here, myapp is the name of the Docker image.
+
+3. Running the Docker Container
+Run the container using the built image:
+
+bash
+Copy code
+docker run -d -p 8080:80 myapp
+-d: Runs the container in detached mode.
+-p: Maps the host and container port numbers.
+Here, myapp is the name of the Docker image.
+
+4. Accessing the Website
+Open the following link in your web browser to access the website locally:
+
+http://localhost:8080
+
