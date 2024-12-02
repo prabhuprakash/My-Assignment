@@ -9,14 +9,14 @@
                 COPY . /usr/share/nginx/html<br/>
             port number is mentioned through which the website is accessed.<br/>
                 EXPOSE 80<br/>
-      <ins>##**2.Building the Docker image**<br/>
+      <ins>**2.Building the Docker image**</ins><br/>
             docker build -t myapp .<br/>
               here myapp is the image name.<br/>
-    ##**3.Running the docker container**<br/>
+      <ins>**3.Running the docker container**</ins><br/>
             docker run -d -p 8080:80 myapp<br/>
               -d is for running the container in detached mode<br/>
               -p is for mapping the host and container port numbers<br/>
               here myapp is the created image name<br/>
-    ##**4.accessing the website**<br/>
+      <ins>**4.accessing the website**</ins><br/>
             open the link below in the web browser for opening locally<br/>
               http://localhost:8080 <br/>
