@@ -9,3 +9,5 @@
             docker run -d -p 8080:80 myapp<br/><br/>
       <ins>**4.accessing the website**</ins><br/>
             http://localhost:8080 <br/>
+           
+            https://cors-anywhere.herokuapp.com/corsdemo
