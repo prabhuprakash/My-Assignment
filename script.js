@@ -17,6 +17,5 @@ async function getText(text) {
     document.getElementById("p1").innerHTML=t;
   }
   document.addEventListener("DOMContentLoaded", function() {
-    // You can now safely call getText or other functions that rely on the DOM being ready
-    getText(""); // You can pass a default query or leave it empty
-});
+    getText("");
+  });
