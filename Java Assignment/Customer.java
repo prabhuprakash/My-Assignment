@@ -49,6 +49,27 @@ class Customer {
         System.out.println("Account not found!");
     }
 
+    public void deleteAccount(String accNo) {
+        boolean check=false;
+        String s=null;
+        for (Account account : accounts) {
+            if (account.getAccNo().equals(accNo)) {
+                s=account.getCustomerName();
+                accounts.remove(account);
+                check=true;
+                break;
+            }
+        }
+        if(check) {
+            System.out.println("Account no:"+accNo+", Customer name :"+s+" is deleted successfully");
+            return;
+        }
+        else {
+            System.out.println("Account not found"); 
+            return; 
+        }       
+            
+    }
     public void displayAccounts() {
         System.out.println("Customer Name: " + customerName + ", Accounts: ");
         for (Account account : accounts) {

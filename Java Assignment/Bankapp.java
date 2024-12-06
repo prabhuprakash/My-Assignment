@@ -18,6 +18,7 @@ public class Bankapp {
         bank.payLoan("cherry", 2000.0);
         bank.payLoan("prakash", 3000.0);
         bank.transaction();
+        customer1.deleteAccount("BOI452AP");
     }
 }
     
