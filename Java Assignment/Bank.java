@@ -1,57 +1,100 @@
 import java.util.*;
 class Bank {
-    private List<Customer> customerDetails;
-    private Map<String, Double> loanDetails;
-
-    public Bank() {
-        customerDetails = new ArrayList<>();
-        loanDetails = new HashMap<>();
-    }
-
-    public void addCustomer(Customer customer) {
-        customerDetails.add(customer);
-    }
-
-    public void giveLoan(String customerName, double loanAmount) {
-        boolean check=false;
-        for(Customer c : customerDetails){
-            if(c.getCustomerName().equals(customerName)){
-                check=true;
+    private List<Customer> customers=new ArrayList<>();
+    private Set<Account> accounts=new HashSet<>();
+    private Map<String,String> linkAccountToCustomer=new HashMap<>();
+    public void createAccount(String customerName,String customerId,String accountNo,String address,String phone,double initialBalance) {
+        boolean t=false;
+        for(Account acc :accounts){
+            System.out.println(acc.getAccNo());
+            if(acc.getAccNo().equals(accountNo)){
+                t=true;
                 break;
             }
         }
-        if(check) {
-            loanDetails.put(customerName, loanAmount);
-            System.out.println("Loan of " + loanAmount + " granted to " + customerName);
+        System.out.println(t);
+        if(t){
+            System.out.println("Account already exists ");
         }
         else {
-            System.out.println("Create an account to get loan");
+            Customer newCustomer=new Customer(customerName,customerId,address,phone);
+            Account newAccount=new  Account(accountNo, initialBalance);
+            customers.add(newCustomer);
+            accounts.add(newAccount);
+            linkAccountToCustomer.put(accountNo,customerId);
+            System.out.println("Account created successfully for " + customerName+" with account number: "+accountNo);
         }
+        return;
     }
-
-    public void payLoan(String customerName, double amount) {
-        if (loanDetails.containsKey(customerName)) {
-            double remainingLoan = loanDetails.get(customerName) - amount;
-            if (remainingLoan <= 0) {
-                loanDetails.remove(customerName);
-                System.out.println("Loan fully repaid by " + customerName);
-            } else {
-                loanDetails.put(customerName, remainingLoan);
-                System.out.println("Loan payment of " + amount + " collected. Remaining loan: " + remainingLoan);
+    public void deposit(String accNo, double amount) {
+        for (Account account : accounts) {
+            if (account.getAccNo().equals(accNo)) {
+                account.deposit(amount);
+                return;
             }
-        } else {
-            System.out.println("No loan found for " + customerName);
+        }
+        System.out.println("Account not found!");
+    }
+    public void withdraw(String accNo, double amount) {
+        if (amount > 1000) {
+            System.out.println("You can only withdraw 1000"); 
+            return;   
+        }
+        else {
+            for (Account account : accounts) {
+                if (account.getAccNo().equals(accNo)) {
+                    account.withdraw(amount);
+                    return;
+                }
+            }
+        }
+        System.out.println("Account not found!");
+        return;
+    }
+    public void getLoan(String accountNo,double amount){
+        if(amount>5000) {
+            System.out.println("Max Loan you can get is 5000");
+            return;
+        }
+        for (Account account : accounts) {
+            if (account.getAccNo().equals(accountNo)) {
+                if(account.getLoan()>0)
+                    System.out.println("You already took a loan.Clear it first");
+                else {
+                    account.setGetLoan(amount);
+                    System.out.println("The loan amount has been added to your account ("+accountNo+"). New Balance:"+account.getBalance());
+                }
+                return;
+            }
+            else {
+                System.out.println("Account not found.");
+            }
         }
     }
-
-    public void transaction() {
-        System.out.println("Displaying all customers and their loans:");
-        for (Customer customer : customerDetails) {
-            customer.displayAccounts();
-        }
-        System.out.println("Loan Details:");
-        for (Map.Entry<String, Double> entry : loanDetails.entrySet()) {
-            System.out.println("Customer: " + entry.getKey() + ", Loan: " + entry.getValue());
+    public void payLoan(String accountNo,double amount){
+        for (Account account : accounts) {
+            if (account.getAccNo().equals(accountNo)) {
+                if(account.getLoan()==0)
+                    System.out.println("You have no loans to be cleared.");
+                else {
+                    account.setPayLoan(amount);
+                }
+                return;
+            }
+            else {
+                System.out.println("Account not found.");
+            }
         }
     }
+    public void deleteAccount(String accountNo){
+        for (Account account : accounts) {
+            if (account.getAccNo().equals(accountNo)) {
+                accounts.remove(account);
+                String s=linkAccountToCustomer.get(accountNo);
+                System.out.println("Account no:"+accountNo+", Customer Id:"+s+" is deleted successfully");
+                return;
+            }
+        }
+        System.out.println("Account not found.");
+    }    
 }

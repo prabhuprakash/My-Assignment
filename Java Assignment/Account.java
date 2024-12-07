@@ -1,41 +1,45 @@
+import java.util.Objects;
+
 class Account {
     private String accNo;
-    private String customerName;
-    private String customerId;
     private double balance;
+    private double loan;
 
-    public Account(String accNo, String customerName, String customerId, double initialBalance) {
+    public Account(String accNo, double initialBalance) {
         this.accNo = accNo;
-        this.customerName = customerName;
-        this.customerId = customerId;
         this.balance = initialBalance;
+        this.loan=0;
     }
-
     public String getAccNo() {
         return accNo;
     }
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public String getCustomerId() {
-        return customerId;
-    }
-
     public double getBalance() {
         return balance;
     }
-
     public void updateAcc(String accNo) {
         this.accNo = accNo;
     }
-    
+    public double getLoan(){
+        return loan;
+    }
+    public void setGetLoan(double amount){
+        loan+=amount;
+        balance+=loan;
+    }
+    public void setPayLoan(double amount){
+            loan-=amount;
+            balance-=amount;
+            if(loan==0){
+                System.out.println("Loan has been cleared. New balance:"+balance);
+            }
+            else{
+                System.out.println("You paid "+amount+" of loan.You still have pending loan of "+loan+". New Balance:"+balance);
+            }
+    }
     public void deposit(double amount) {
             balance += amount;
             System.out.println("Deposit successful! New balance: " + balance);
     }
-
     public boolean withdraw(double amount) {
         if (balance >= amount) {
             balance -= amount;
