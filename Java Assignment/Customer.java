@@ -1,9 +1,7 @@
-import java.util.*;
 class Customer {
     private String customerName;
     private String customerId;
     private String address;
-    private double initbalance;
     private String phone;
     
 
@@ -19,13 +17,10 @@ class Customer {
     public String getCustomerId(){
         return customerId;
     }
-    public double getInitalBalance() {
-        return initbalance;
-    }
-    public String address(){
+    public String getAddress(){
         return address;
     }
-    public String phone(){
+    public String getPhone(){
         return phone;
     }
 }

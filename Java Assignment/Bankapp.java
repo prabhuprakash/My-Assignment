@@ -12,7 +12,7 @@ public class Bankapp {
             System.out.print("*");
             System.out.println();
             System.out.println("Welcome to Banking services.\nPlease select the option you want to perform:\n1.Create Account\n2.Deposit\n3.Withdraw");
-            System.out.print("4.Get Loan\n5.Pay Loan\n6.Delete Account\n7.End Banking Service\nEnter the option:");
+            System.out.print("4.Get Loan\n5.Pay Loan\n6.AccountDetails\n7.Delete Account\n8.End Banking Service\nEnter the option:");
             n=s.nextInt();
             switch(n) {
                 case 1: {
@@ -75,10 +75,18 @@ public class Bankapp {
                     System.out.println("Enter account number:");
                     s.nextLine();
                     accno=s.nextLine();
-                    bank.deleteAccount(accno);
+                    bank.accountDetails(accno);
                     break;
                 }
                 case 7: {
+                    System.out.println("Enter account number:");
+                    s.nextLine();
+                    accno=s.nextLine();
+                    bank.deleteAccount(accno);
+                    break;
+                }
+                
+                case 8: {
                     System.out.println("Thank You.Visit Again");
                     c=false;
                     break;

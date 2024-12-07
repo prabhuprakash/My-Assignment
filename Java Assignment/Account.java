@@ -1,5 +1,3 @@
-import java.util.Objects;
-
 class Account {
     private String accNo;
     private double balance;
@@ -10,14 +8,12 @@ class Account {
         this.balance = initialBalance;
         this.loan=0;
     }
+    
     public String getAccNo() {
         return accNo;
     }
     public double getBalance() {
         return balance;
-    }
-    public void updateAcc(String accNo) {
-        this.accNo = accNo;
     }
     public double getLoan(){
         return loan;

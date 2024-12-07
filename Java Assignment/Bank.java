@@ -3,10 +3,10 @@ class Bank {
     private List<Customer> customers=new ArrayList<>();
     private Set<Account> accounts=new HashSet<>();
     private Map<String,String> linkAccountToCustomer=new HashMap<>();
+    
     public void createAccount(String customerName,String customerId,String accountNo,String address,String phone,double initialBalance) {
         boolean t=false;
         for(Account acc :accounts){
-            System.out.println(acc.getAccNo());
             if(acc.getAccNo().equals(accountNo)){
                 t=true;
                 break;
@@ -96,5 +96,31 @@ class Bank {
             }
         }
         System.out.println("Account not found.");
-    }    
+    }   
+    public void accountDetails(String accountNo) {
+        String customerId=linkAccountToCustomer.get(accountNo);
+        System.out.println(customerId);
+        boolean check=false;
+        Customer c=null;
+        Account a=null;
+        for (Account account : accounts) {
+            if (account.getAccNo().equals(accountNo)) {
+                a=account;
+                check=true;
+                break;
+            }
+        }
+        if(!check){
+            System.out.println("Account not found");
+            return;
+        }
+        for(Customer customer : customers){
+            if(customer.getCustomerId().equals(customerId) ){
+                c=customer;
+                break;
+            }
+        }
+        System.out.println("Customer Name : "+c.getcustomerName()+"\nCustomer Id : "+c.getCustomerId()+"\nAddress : "+c.getAddress()+"\nPhone number : "+c.getPhone()+"\nAccount number : "+a.getAccNo()+"\nAccount Balance : "+a.getBalance()+"\nLoan amount:"+a.getLoan());
+
+    } 
 }
