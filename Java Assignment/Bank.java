@@ -6,14 +6,13 @@ class Bank {
     
     public void createAccount(String customerName,String customerId,String accountNo,String address,String phone,double initialBalance) {
         boolean t=false;
-        for(Account acc :accounts){
+        /*for(Account acc :accounts){
             if(acc.getAccNo().equals(accountNo)){
                 t=true;
                 break;
             }
-        }
-        System.out.println(t);
-        if(t){
+        }*/
+        if(linkAccountToCustomer.containsKey(accountNo)){
             System.out.println("Account already exists ");
         }
         else {

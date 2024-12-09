@@ -1,10 +1,11 @@
 const taskInput = document.getElementById('taskInput');
 const addTask = document.getElementById('addTask');
 const taskList = document.getElementById('taskList');
-
+const data=[];
 addTask.addEventListener('click', () => {
     const taskText = taskInput.value.trim();
-    if (taskText !== '') {
+    if (taskText !== '' && !data.includes(taskText)) {
+        data.push(taskText);
         // Create table row and cells
         const tr = document.createElement('tr');
         tr.classList.add('task');
@@ -26,6 +27,7 @@ addTask.addEventListener('click', () => {
         deleteBtn.classList.add('delete-btn');
         deleteBtn.textContent = 'Delete';
         deleteBtn.addEventListener('click', () => {
+            data.splice(data.indexOf(taskText),1);
             tr.remove(); // Remove task
         });
         deleteBtnCell.appendChild(deleteBtn);
@@ -40,5 +42,8 @@ addTask.addEventListener('click', () => {
 
         // Clear input field
         taskInput.value = '';
+    }
+    else{
+        alert("Cant insert because it already exists");
     }
 });

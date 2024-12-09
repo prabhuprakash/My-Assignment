@@ -9,7 +9,7 @@ public class Bankapp {
         boolean c=true;
         while(c) {
             for(int i=0;i<50;i++)
-            System.out.print("*");
+                System.out.print("*");
             System.out.println();
             System.out.println("Welcome to Banking services.\nPlease select the option you want to perform:\n1.Create Account\n2.Deposit\n3.Withdraw");
             System.out.print("4.Get Loan\n5.Pay Loan\n6.AccountDetails\n7.Delete Account\n8.End Banking Service\nEnter the option:");
@@ -96,8 +96,7 @@ public class Bankapp {
                 }
             }
         }
-
-
+        s.close();
     }
 }
     

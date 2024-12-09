@@ -35,7 +35,7 @@ input[type="text"] {
 }
 
 input[type="text"]:focus {
-    border-color: #4a90e2; /* Light blue focus border */
+    border-color: #4a90e2; 
     outline: none;
 }
 
@@ -51,11 +51,10 @@ input[type="text"]:focus {
 }
 
 #addTask:hover {
-    background-color: #357ab7; /* Darker blue on hover */
+    background-color: #357ab7; 
     transform: scale(1.05);
 }
 
-/* Table Styles */
 table {
     width: 100%;
     border-style:ridge ;
@@ -82,11 +81,11 @@ td {
     font-size: 14px;
 }
 tbody tr:nth-child(odd) {
-    background-color: #ede7f6; /* Light lavender for alternating rows */
+    background-color: #ede7f6; 
 }
 
 tbody tr:nth-child(even) {
-    background-color: #ffffff; /* White for alternating rows */
+    background-color: #ffffff; 
 }
 
 .task th {
@@ -95,7 +94,6 @@ tbody tr:nth-child(even) {
     color: white;
 }
 
-/* Completed Task Styling */
 .completed {
     text-decoration: line-through;
     color: gray;

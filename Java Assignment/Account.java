@@ -23,8 +23,20 @@ class Account {
         balance+=loan;
     }
     public void setPayLoan(double amount){
-            loan-=amount;
-            balance-=amount;
+            if(amount<=balance) {
+                loan-=amount;
+                if(loan >0)
+                    balance=balance-amount;
+                else{
+                    balance=balance-amount-loan;
+                    loan=0;
+                }
+            }
+            else {
+                System.out.println("You dont have enough balance.");
+                return;
+            }
+
             if(loan==0){
                 System.out.println("Loan has been cleared. New balance:"+balance);
             }
