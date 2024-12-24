@@ -14,18 +14,24 @@ const Select = styled.select`
   padding: 10px;
   font-size: 16px;
 `;
-
+const Grid = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: flex-start;
+`;
 const Theater = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
   margin-top: 20px;
 `;
 
 const Seats = styled.div`
   display: grid;
-  grid-template-columns: repeat(20, 1fr);
+  grid-template-columns: repeat(10, 1fr);
   gap: 10px;
   justify-content: center;
   align-items: center;
@@ -53,17 +59,21 @@ const SeatButton = styled.button`
 `;
 
 const SelectedSeatsContainer = styled.div`
-  margin-top: 20px;
+  margin-top: 15px;
+  display : flex;
+  flex-direction:column;
   text-align: center;
+  gap:10px;
 `;
 
 const SelectedSeatsList = styled.div`
-  margin-top: 10px;
   font-size: 16px;
 `;
+const H3=styled.h3`
+  margin:0;
 
+`
 const BuyTicketsButton = styled.button`
-  margin-top: 20px;
   padding: 10px 20px;
   background-color: #3498db;
   color: white;
@@ -112,107 +122,116 @@ const seatReducer = (seatState, action) => {
   }
 };
 
+const fetchPopularMovies = async () => {
+  const url = `https://api.themoviedb.org/3/movie/popular?language=en-US&page=1}`;
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      Authorization:
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkNTUyZWMyMGZlOWUxYTkzMzIzOTQwNzFmMzg2YTNmOCIsIm5iZiI6MTczNDc1MjI1Ny4xMzQsInN1YiI6IjY3NjYzODAxNmNlYmE4MjliOTc0YjQyMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.s8XtBP1-lD9E6BgnaruBBzKWU92bQI_weSQNhDvX7a8" // Replace 'YOUR_API_KEY' with your actual API key
+    }
+  };
+
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  const data = await response.json();
+  return data;
+};
+
 const TicketBooking = () => {
   const { signInState } = useContext(SignInContext);
-  if (signInState.action === "LogIn") {
-    return (
-      <Container>
-        <h2>Please sign in to book tickets.</h2>
-      </Container>
-    );
-  }
   const [seatState, dispatchSeatState] = useReducer(seatReducer, {
     selectedSeats: [],
     purchasedSeats: []
   });
-  const seatsPerSection = 160;
-
-  const fetchPopularMovies = async () => {
-    const url = `https://api.themoviedb.org/3/movie/popular?language=en-US&page=1}`;
-    const options = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkNTUyZWMyMGZlOWUxYTkzMzIzOTQwNzFmMzg2YTNmOCIsIm5iZiI6MTczNDc1MjI1Ny4xMzQsInN1YiI6IjY3NjYzODAxNmNlYmE4MjliOTc0YjQyMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.s8XtBP1-lD9E6BgnaruBBzKWU92bQI_weSQNhDvX7a8" // Replace 'YOUR_API_KEY' with your actual API key
-      }
-    };
-
-    const response = await fetch(url, options);
-    if (!response.ok) {
-      throw new Error("Failed to fetch data");
-    }
-
-    const data = await response.json();
-    return data;
-  };
+  const seatsPerSection = 60;
+  
   const movielist = useQuery({
     queryKey: ["movie"],
     queryFn: fetchPopularMovies,
     enabled: true
   });
 
+  if (signInState.action === "LogIn") {
+    return (
+      <Container>
+        <h2>Please sign in to book tickets.</h2>
+      </Container>
+    );
+  }  
+  
   return (
     <Container>
       {movielist.isLoading && <p>Loading Movies...</p>}
       {movielist.error && <p>Error: {movielist.error.message}</p>}
-      {movielist.data &&
-      movielist.data.results &&
-      movielist.data.results.length > 0 ? (
-        <Select
-          name="movies"
-          onChange={() => dispatchSeatState({ type: "resetSeats" })}
-        >
-          {movielist.data.results.map((movie) => (
-            <Option key={movie.id} value={movie.title}>
-              {movie.title}
-            </Option>
-          ))}
-        </Select>
-      ) : (
-        !movielist.isLoading && <p>No movies found.</p>
-      )}
-      <Theater>
-        <Seats>
-          {Array.from({ length: seatsPerSection }, (_, i) => i + 1).map(
-            (seat) => {
-              const seatId = `${seat}`;
-              return (
-                <SeatButton
-                  key={seatId}
-                  $selected={seatState.selectedSeats.includes(seatId)}
-                  $purchased={seatState.purchasedSeats.includes(seatId)}
-                  onClick={() =>
-                    dispatchSeatState({
-                      type: seatState.selectedSeats.includes(seatId)
-                        ? "toggleOff"
-                        : "toggleOn",
-                      value: seatId
-                    })
-                  }
-                >
-                  {seatId}
-                </SeatButton>
-              );
-            }
+      <Grid>
+        <Theater>
+          {movielist.data &&
+          movielist.data.results &&
+          movielist.data.results.length > 0 ? (
+            <Select
+              name="movies"
+              onChange={() => {
+                dispatchSeatState({
+                  type: "resetSeats",
+                });
+              }}
+            >
+              {movielist.data.results.map((movie) => (
+                <Option key={movie.id} value={movie.id}>
+                  {movie.title}
+                </Option>
+              ))}
+            </Select>
+          ) : (
+            !movielist.isLoading && <p>No movies found.</p>
           )}
-        </Seats>
-      </Theater>
-
-      <SelectedSeatsContainer>
-        <h3>Selected Seats:</h3>
-        <SelectedSeatsList>
-          {seatState.selectedSeats.length > 0
-            ? seatState.selectedSeats.join(", ")
-            : "None"}
+        </Theater>
+        <Theater>
+            <Seats>
+              {Array.from({ length: seatsPerSection }, (_, i) => i + 1).map(
+                (seat) => {
+                  const seatId = `${seat}`;
+                  return (
+                    <SeatButton
+                      key={seatId}
+                      $selected={seatState.selectedSeats.includes(seatId)}
+                      $purchased={seatState.purchasedSeats.includes(seatId)}
+                      onClick={() =>
+                        dispatchSeatState({
+                          type: seatState.selectedSeats.includes(seatId)
+                            ? "toggleOff"
+                            : "toggleOn",
+                          value: seatId
+                        })
+                      }
+                    >
+                      {seatId}
+                    </SeatButton>
+                  );
+                }
+              )}
+            </Seats>
+            <SelectedSeatsContainer>
+              <h3>Selected Seats:</h3>
+<SelectedSeatsList>
+                {seatState.selectedSeats.length > 0
+                  ? seatState.selectedSeats.join(", ")
+                  : "None"}
         </SelectedSeatsList>
         <BuyTicketsButton
-          onClick={() => dispatchSeatState({ type: "purchase" })}
-          disabled={seatState.selectedSeats.length === 0}
-        >
-          Buy Tickets
+                onClick={() => dispatchSeatState({ type: "purchase" })}
+                disabled={seatState.selectedSeats.length === 0}
+              >
+                Buy Tickets
         </BuyTicketsButton>
-      </SelectedSeatsContainer>
+            </SelectedSeatsContainer>
+        </Theater>
+      </Grid>
     </Container>
   );
 };
