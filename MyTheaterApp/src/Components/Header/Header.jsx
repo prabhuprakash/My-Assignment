@@ -1,6 +1,6 @@
-import { useReducer, useState } from "react";
+import { useContext, useState } from "react";
 import styled from "styled-components";
-
+import { SignInContext } from "../../Context/SignInStatusProvider";
 const Container = styled.div`
   display: flex;
   flex-direction: row;
@@ -64,31 +64,18 @@ const Button = styled.button`
 `;
 
 const Header = () => {
-  const reducer = (right, action) => {
-    switch (action.action) {
-      case "LogIn":
-        return { action: "LogOut", name: action.name };
-      case "LogOut":
-        return { action: "LogIn", name: "" };
-      default:
-        return right;
-    }
-  };
   const [validinput, setValidInput] = useState(true);
   const [user, setUser] = useState("");
-  const [right, dispatchRight] = useReducer(reducer, {
-    action: "LogIn",
-    name: "",
-  });
-  const LogOut = () => {
+  const { signInState, dispatchSignIn } = useContext(SignInContext);
+  const logOut = () => {
     return (
       <>
         <InputFields>
-          <P>Welcome, {right.name}</P>
+          <P>Welcome, {signInState.name}</P>
         </InputFields>
         <Button
           onClick={() => {
-            dispatchRight({ action: "LogOut", name: "" });
+            dispatchSignIn({ action: "LogOut", name: "" });
             setUser("");
           }}
         >
@@ -97,7 +84,7 @@ const Header = () => {
       </>
     );
   };
-  const LogIn = () => {
+  const logIn = () => {
     return (
       <>
         <InputFields>
@@ -122,7 +109,7 @@ const Header = () => {
         </InputFields>
         <Button
           onClick={() => {
-            if (user !== "") dispatchRight({ action: "LogIn", name: user });
+            if (user !== "") dispatchSignIn({ action: "LogIn", name: user });
             else setValidInput(false);
           }}
         >
@@ -132,12 +119,12 @@ const Header = () => {
     );
   };
   const renderRight = () => {
-    return right.action === "LogIn" ? LogIn() : LogOut();
+    return signInState.action === "LogIn" ? logIn() : logOut();
   };
   return (
     <Container>
       <Left>My Theater</Left>
-      <Right $loginstatus={right.action}>{renderRight()}</Right>
+      <Right $loginstatus={signInState.action}>{renderRight()}</Right>
     </Container>
   );
 };

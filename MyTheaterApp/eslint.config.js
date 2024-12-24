@@ -25,5 +25,5 @@ export default [
       "no-unused-vars": [1],
       "comma-dangle": ["error", "never"]
     }
-  },
+  }
 ];

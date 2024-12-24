@@ -1,16 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import styled from "styled-components";
-
-const Container = styled.div`
-  background: linear-gradient(to bottom, #f0f4f8, #cfd9e5);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-family: "Roboto", sans-serif;
-  padding: 20px;
-`;
+import PopularMovies from "./PopularMovies";
 
 const InputFields = styled.div`
   display: flex;
@@ -46,30 +37,6 @@ const Input = styled.input`
     color: #888;
   }
 `;
-
-const Button = styled.button`
-  padding: 12px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  transition:
-    background-color 0.3s ease,
-    transform 0.2s ease;
-
-  &:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    background-color: #004085;
-    transform: translateY(2px);
-  }
-`;
-
 const OutputField = styled.div`
   margin-top: 40px;
   padding: 30px;
@@ -143,7 +110,7 @@ const MovieSearch = () => {
       accept: "application/json",
       Authorization:
         "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkNTUyZWMyMGZlOWUxYTkzMzIzOTQwNzFmMzg2YTNmOCIsIm5iZiI6MTczNDc1MjI1Ny4xMzQsInN1YiI6IjY3NjYzODAxNmNlYmE4MjliOTc0YjQyMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.s8XtBP1-lD9E6BgnaruBBzKWU92bQI_weSQNhDvX7a8"
-    },
+    }
   };
   const fetchMovies = async () => {
     const url = `https://api.themoviedb.org/3/search/movie?query=${moviename}&include_adult=false&language=en-US&page=1`;
@@ -153,11 +120,8 @@ const MovieSearch = () => {
   const movielist = useQuery({
     queryKey: ["movie", moviename],
     queryFn: fetchMovies,
-    enabled: false,
+    enabled: moviename !== ""
   });
-  const handleSearch = () => {
-    movielist.refetch();
-  };
   return (
     <>
       <InputFields>
@@ -169,7 +133,6 @@ const MovieSearch = () => {
           placeholder="movie name"
           id="searchText"
         />
-        <Button onClick={handleSearch}>Search</Button>
       </InputFields>
       <OutputField>
         {moviename !== "" ? (
@@ -182,7 +145,7 @@ const MovieSearch = () => {
             movielist.data.results.length > 0 ? (
             <Grid>
               {movielist.data.results.map((movie) => (
-                <GridBlock>
+                <GridBlock key={movie.id}>
                   <GridImg
                     src={
                       movie.poster_path
@@ -200,7 +163,7 @@ const MovieSearch = () => {
             !movielist.isLoading && <p>No movies found.</p>
           )
         ) : (
-          <p>Please enter a movie title to search.</p>
+          <PopularMovies />
         )}
       </OutputField>
     </>

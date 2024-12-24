@@ -13,6 +13,10 @@ const Button = styled.button`
   background-color: ${(props) => (props.$isactive ? "#ffffff" : "transparent")};
   color: ${(props) => (props.$isactive ? "#4caf50" : "#ffffff")};
   border: none;
+  cursor: pointer;
+  &:hover {
+    transform: scale(1.25);
+  }
 `;
 const NavigationBar = () => {
   const navigate = useNavigate();
@@ -27,14 +31,6 @@ const NavigationBar = () => {
           $isactive={location.pathname === "/"}
         >
           Movie Search
-        </Button>
-        <Button
-          onClick={() => {
-            navigate("/PopularMovies");
-          }}
-          $isactive={location.pathname === "/PopularMovies"}
-        >
-          Popular Movies
         </Button>
         <Button
           onClick={() => {
