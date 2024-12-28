@@ -22,6 +22,10 @@ const Button = styled.button`
   &:hover {
     background-color: #0056b3;
   }
+  &:disabled {
+    background-color: #4f8bb3;
+    cursor: not-allowed;
+  }
 `;
 
 const OutputField = styled.div`
@@ -92,7 +96,7 @@ const PopularMovies = () => {
         accept: "application/json",
         Authorization:
           "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkNTUyZWMyMGZlOWUxYTkzMzIzOTQwNzFmMzg2YTNmOCIsIm5iZiI6MTczNDc1MjI1Ny4xMzQsInN1YiI6IjY3NjYzODAxNmNlYmE4MjliOTc0YjQyMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.s8XtBP1-lD9E6BgnaruBBzKWU92bQI_weSQNhDvX7a8" // Replace 'YOUR_API_KEY' with your actual API key
-      },
+      }
     };
 
     const response = await fetch(url, options);
@@ -107,12 +111,8 @@ const PopularMovies = () => {
   const movielist = useQuery({
     queryKey: ["movie", pageNumber.count],
     queryFn: fetchPopularMovies,
-    enabled: true,
+    enabled: true
   });
-
-  const updatePage = () => {
-    movielist.refetch();
-  };
 
   return (
     <>
@@ -120,15 +120,14 @@ const PopularMovies = () => {
         <Button
           onClick={() => {
             dispatchPageNumber({ type: "previousPage" });
-            updatePage();
           }}
+          disabled={pageNumber.count === 1}
         >
           Previous Page
         </Button>
         <Button
           onClick={() => {
             dispatchPageNumber({ type: "nextPage" });
-            updatePage();
           }}
         >
           Next Page
