@@ -1,22 +1,44 @@
-import { Button, Card, DatePicker, Layout, List, message, Spin } from 'antd';
-import moment from 'moment'; // For date manipulation
+import { Button, Card, DatePicker, Flex, Layout, message, Spin, Typography } from 'antd';
+import dayjs from 'dayjs'; // Importing dayjs
 import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { LogInContext } from '../Context/LoginContextProvider';
 
-const { Content } = Layout;
-const { Meta } = Card;
+const { Header, Content } = Layout;
+const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 
-const StyledContent = styled(Content)`
+const RentedCarsLayout =styled(Layout)`
+  
+`;
+
+const RentedCarsHeader = styled(Header)`
   position: fixed;
-  padding: 50px 20px;
+  margin-top: 0px;
+  background: #ffffff;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e0e0e0;
+  z-index: 1;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 16px;
+  }
+`;
+
+const RentedCarsContent = styled(Content)`
+  position: fixed;
+  padding-top: 65px;
+  width: 100%;
   background-color: #f9f9f9;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  overflow-y: hidden;
+  overflow-y: auto;
   max-height: calc(100vh - 64px);
   @media (max-width: 768px) {
     padding: 30px 10px;
@@ -29,12 +51,6 @@ const PageContainer = styled.div`
   margin: 0 auto;
 `;
 
-const Title = styled.h1`
-  text-align: center;
-  margin-bottom: 20px;
-  color: #1890ff;
-`;
-
 const CenteredSpinner = styled.div`
   display: flex;
   justify-content: center;
@@ -42,9 +58,25 @@ const CenteredSpinner = styled.div`
   height: 100vh;
 `;
 
-const ReturnButton = styled(Button)`
-  margin-top: 10px;
+const CarCard = styled(Card)`
+  width: 300px;
+  margin: 10px;
+  border-radius: 12px;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  }
+`;
+
+const CarImage = styled.img`
   width: 100%;
+  height: auto;
+  margin-bottom: 5px;
+  border-radius: 8px;
 `;
 
 const NoCarsMessage = styled.div`
@@ -63,19 +95,19 @@ const RentedCars = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [hasWarned, setHasWarned] = useState(false);
-  const [dateRange, setDateRange] = useState([moment().subtract(7, 'days'), moment()]); // Default to 7 days ago and now
+  const [dateRange, setDateRange] = useState([dayjs().subtract(7, 'days'), dayjs()]); // Default to 7 days ago and now
 
   useEffect(() => {
     if (logInState.type === 'LogIn') {
       let url = `http://localhost:5000/api/users/rented-cars?username=${username}&role=${role}`;
-      
+
       // If the admin has selected a date range, include it in the query
       if (role === 'admin' && dateRange) {
         const startDate = dateRange[0].format('YYYY-MM-DD');
         const endDate = dateRange[1].format('YYYY-MM-DD');
         url += `&startDate=${startDate}&endDate=${endDate}`;
       }
-  
+
       fetch(url, {
         method: 'GET',
         headers: {
@@ -114,12 +146,17 @@ const RentedCars = () => {
       .then((data) => {
         if (data.success) {
           message.success('Car returned successfully');
-          setRentedCars((prevCars) => prevCars.filter((car) => car.orderId !== orderId)); // Filter by orderId
+          setRentedCars(data.ordersHistory); // Filter by orderId
         } else {
           message.error(data.message || 'Failed to return car');
         }
       })
       .catch((err) => message.error('Error returning car'));
+  };
+
+  const disabledDate = (current) => {
+    // Disable dates after the selected end date
+    return current && current.isAfter(dateRange[1], 'day');
   };
 
   if (loading) {
@@ -135,51 +172,43 @@ const RentedCars = () => {
   }
 
   return (
-    <StyledContent>
-      <Title>{logInState.role === "admin" ? "All Rented Cars" : "Rented Cars"}</Title>
-      
-      {role === 'admin' && (
-        <div style={{ marginBottom: '20px' }}>
-          <RangePicker
-            value={dateRange}
-            onChange={(dates) => setDateRange(dates)}
-            format="YYYY-MM-DD"
-          />
-        </div>
-      )}
-      
-      {rentedCars.length === 0 ? (
-        <NoCarsMessage>No rented cars found</NoCarsMessage>
-      ) : (
-        <List
-          grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4 }}
-          dataSource={rentedCars}
-          renderItem={(car) => (
-            <List.Item key={car.orderId}>
-              <Card
-                hoverable
-                cover={<img alt={car.carModel} src={`https://via.placeholder.com/300?text=${car.carModel}`} />}
-              >
-                <Meta
-                  title={`${car.carBrand} - ${car.carModel}`}
-                  description={`Rented on: ${new Date(car.orderDate).toLocaleDateString()}`}
-                />
-                <div>Order ID: {car.orderId}</div> {/* Display the orderId */}
-                {logInState.role !== "admin" && (
-                  <ReturnButton
-                    type="primary"
-                    danger
-                    onClick={() => handleReturnCar(car.orderId)}
-                  >
+    <RentedCarsLayout>
+      <RentedCarsHeader>
+        <Title level={2}>{logInState.role === "admin" ? "All Rented Cars" : "Rented Cars"}</Title>
+        <RangePicker
+  value={dateRange}
+  onChange={(dates) => setDateRange(dates)}
+  format="YYYY-MM-DD"
+  disabledDate={(current) => current && current > dayjs().endOf('day')} // Disable dates beyond today
+/>
+      </RentedCarsHeader>
+      <RentedCarsContent>
+        {rentedCars.length === 0 ? (
+          <NoCarsMessage>No rented cars found</NoCarsMessage>
+        ) : (
+          <Flex wrap="wrap" gap="16px" justify="start">
+            {rentedCars.map((car, index) => (
+              <CarCard key={index} hoverable cover={<CarImage src={`https://placehold.co/300x200?text=${car.carBrand}`} />}>
+                <Title level={4}>{car.carBrand} - {car.carModel}</Title>
+                {logInState.role === "admin" &&<Text>User Name: {car.username}</Text>}              
+                <br />
+                <Text>Rented on: {dayjs(car.orderDate).format('YYYY-MM-DD')}</Text>
+                <br />
+                <Text>Order ID: {car.orderId}</Text>
+                <br />
+                <Text>Status: {car.returnStatus ? "Returned" : "Not Returned"}</Text>
+                <br />
+                {logInState.role !== "admin" && !car.returnStatus && (
+                  <Button type="primary" danger onClick={() => handleReturnCar(car.orderId)}>
                     Return Car
-                  </ReturnButton>
+                  </Button>
                 )}
-              </Card>
-            </List.Item>
-          )}
-        />
-      )}
-    </StyledContent>
+              </CarCard>
+            ))}
+          </Flex>
+        )}
+      </RentedCarsContent>
+    </RentedCarsLayout>
   );
 };
 

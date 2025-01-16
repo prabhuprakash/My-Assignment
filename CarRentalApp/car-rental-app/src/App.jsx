@@ -11,7 +11,7 @@ import { Layout } from "antd";
 import LogInContextProvider from "./Context/LoginContextProvider";
 
 
-const { Header, Footer, Content } = Layout;
+const { Header,  Content } = Layout;
 const queryClient = new QueryClient();
 
 const GlobalStyle = createGlobalStyle`
@@ -25,55 +25,40 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const StyledLayout = styled(Layout)`
-  min-height: 100vh;
-  background-color: #f0f2f5;
+const AppLayout = styled(Layout)`
+  
 `;
 
-const StyledHeader = styled(Header)`
+const AppHeader = styled(Header)`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
 `;
-const StyledContent = styled(Content)`
-position:fixed;
-left:0;
-right:0;
-  top: 64px; /* Header height */
-  bottom: 65px; /* Footer height */
-  flex: 1; /* Makes content take the available space */
-`;
 
-const StyledFooter = styled(Footer)`
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: #001529;
-  color: white;
-  text-align: center;
-  height: 65px; /* Set footer height */
-  line-height: 20px; /* Aligns text vertically */
-`;
-
+const AppLayout2 = styled(Layout)`
+  position:fixed;
+  top:64px;
+  left:0;
+  right:0;
+`
 
 function App() {
   return (
     <>
       <GlobalStyle />
       <LogInContextProvider>
-      <StyledLayout>
-        <StyledHeader>
+      <AppLayout>
+        <AppHeader>
           <TopBar />
-        </StyledHeader> 
-        
+        </AppHeader> 
+        <AppLayout2>
         <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
         </QueryClientProvider>
-       
+        </AppLayout2>
       
-      </StyledLayout>
+      </AppLayout>
       </LogInContextProvider>
      
     </>

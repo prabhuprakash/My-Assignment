@@ -1,31 +1,13 @@
 {
   "cars": [
     {
-      "brand": "Volkswagen",
-      "model": "Cabriolet",
-      "carID": "OQ_75_OH_5067",
-      "color": "silver",
-      "type": "convertible",
-      "status": true,
-      "ordered": 5
-    },
-    {
-      "brand": "Chrysler",
-      "model": "Town & Country",
-      "carID": "PJ_01_SP_6005",
-      "color": "red",
-      "type": "convertible",
-      "status": true,
-      "ordered": 3
-    },
-    {
       "brand": "Dodge",
       "model": "Ram 2500",
       "carID": "PC_07_SB_8856",
       "color": "red",
       "type": "suv",
-      "status": false,
-      "ordered": 6
+      "status": true,
+      "ordered": 10
     },
     {
       "brand": "Buick",
@@ -34,7 +16,7 @@
       "color": "red",
       "type": "suv",
       "status": true,
-      "ordered": 1
+      "ordered": 4
     },
     {
       "brand": "GMC",
@@ -43,7 +25,7 @@
       "color": "blue",
       "type": "hatchback",
       "status": true,
-      "ordered": 2
+      "ordered": 4
     },
     {
       "brand": "Cadillac",
@@ -51,8 +33,8 @@
       "carID": "TB_81_ZP_4385",
       "color": "white",
       "type": "suv",
-      "status": false,
-      "ordered": 5
+      "status": true,
+      "ordered": 6
     },
     {
       "brand": "Maserati",
@@ -60,8 +42,8 @@
       "carID": "LC_42_XU_6737",
       "color": "white",
       "type": "sportscar",
-      "status": false,
-      "ordered": 4
+      "status": true,
+      "ordered": 5
     },
     {
       "brand": "Dodge",
@@ -70,7 +52,7 @@
       "color": "blue",
       "type": "sedan",
       "status": true,
-      "ordered": 5
+      "ordered": 9
     },
     {
       "brand": "Mazda",
@@ -79,16 +61,16 @@
       "color": "black",
       "type": "hatchback",
       "status": true,
-      "ordered": 1
+      "ordered": 5
     },
     {
-      "carID": "AP-37-PP-9999",
-      "brand": "Tata",
-      "model": "Safari",
-      "color": "Black",
-      "type": "Suv",
-      "status": true,
-      "ordered": 0
+      "carID": "AP_37_PP_1997",
+      "brand": "tata",
+      "model": "safari",
+      "color": "black",
+      "type": "suv",
+      "status": false,
+      "ordered": 1
     }
   ]
 }

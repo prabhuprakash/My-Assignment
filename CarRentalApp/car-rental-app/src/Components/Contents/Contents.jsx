@@ -3,53 +3,53 @@ import {
   HomeTwoTone
 } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { LogInContext } from "../../Context/LoginContextProvider";
+
 const { Sider, Content } = Layout;
 
-const StyledLayout = styled(Layout)`
-  min-height: 100vh;
-`;
-
-const CenteredSider = styled(Sider)`
+const ContentSider = styled(Sider)`
   background-color: #a2bfc9;
   position: fixed;
   top: 64px;
   bottom: 0px;
   left: 0;
-  width: 200px;  /* Fixed width for Sider */
+  width:200px;
 `;
 
-const StyledMenu = styled(Menu)`
+const ContentContent =styled(Content)`
+  position: fixed;
+  top: 64px;
+  bottom: 0px;
+  left:200px;
+  right:0;
+  
+`;
+
+const ContentMenu = styled(Menu)`
   background-color: inherit;
   margin-top: 20px;
 `;
 
-const StyledContent = styled(Content)`
-  background-color: white;
-  position: fixed;
-  top: 65px;
-  margin-top: auto;
-  right: 0;
-  bottom:auto;
-  left: 200px;  /* Adjusted to match the fixed Sider width */
-  
+const ContentPages = styled(Layout)`
 `;
 
-const menuItems = [
-  { key: "home", label: "Home", path: "/", icon: <HomeTwoTone twoToneColor="#1890ff" /> },
-  { key: "carRents", label: "Car Rents", path: "/carRents", icon: <CarTwoTone twoToneColor="#13c2c2" /> },
-  { key: "rentedCars", label: "Rented Cars", path: "/rentedCars", icon: <CarTwoTone twoToneColor="#faad14" /> },
-];
 
 
 export default function Contents() {
   const [selectedKey, setSelectedKey] = useState(""); // Default selected key
-  
+  const { logInState } = useContext(LogInContext);
   const navigate = useNavigate();
   const location = useLocation();
 
+  const menuItems = [
+    { key: "home", label: "Home", path: "/", icon: <HomeTwoTone twoToneColor="#1890ff" /> },
+    logInState.type === "LogIn"&&{ key: "carRents", label: "Car Rents", path: "/carRents", icon: <CarTwoTone twoToneColor="#13c2c2" /> },
+    logInState.type === "LogIn"&&{ key: "rentedCars", label: "Rented Cars", path: "/rentedCars", icon: <CarTwoTone twoToneColor="#faad14" /> },
+  ];
+  
   useEffect(() => {
     const activeItem = menuItems.find((item) => location.pathname === item.path);
     if (activeItem) setSelectedKey(activeItem.key);
@@ -63,18 +63,18 @@ export default function Contents() {
   };
 
   return (
-    <StyledLayout>
-      <CenteredSider>
-        <StyledMenu
+    <>
+      <ContentSider>
+        <ContentMenu
           mode="inline"
           selectedKeys={[selectedKey]}
           onClick={handleMenuClick}
           items={menuItems}
         />
-      </CenteredSider>
-      <StyledContent>
+      </ContentSider>
+      <ContentContent>
         <Outlet />
-      </StyledContent>
-    </StyledLayout>
+      </ContentContent>
+    </>
   );
 }

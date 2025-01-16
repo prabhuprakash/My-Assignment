@@ -20,10 +20,7 @@ const StyledH2 = styled.h4`
   line-height: 64px;
 `;
 const ResponsiveRow = styled(Row)`
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: center;
-  }
+  
 `;
 const ResponsiveCol = styled(Col)`
   display: flex;
@@ -80,7 +77,6 @@ export default function TopBar() {
     <>
       <ResponsiveRow>
         <Col span={8}>
-          <></>
           <StyledH1><Avatar src={"/Mycarrental_Logo.webp"} />  MyCar Rentals</StyledH1>
         </Col>
         {logInState.type === 'LogOut' ? renderLoggedOutView() : renderLoggedInView()}

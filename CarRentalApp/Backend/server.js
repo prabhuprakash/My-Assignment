@@ -88,7 +88,7 @@ app.post('/api/users/addToOrders', (req, res) => {
     carId: car.carID,
     carBrand: car.brand,
     carModel: car.model,
-    orderDate: new Date().toISOString(),
+    orderDate: new Date().toISOString().split('T')[0],
     returnStatus: false // Initially set to false because the car is not returned yet
   };
 
@@ -107,64 +107,38 @@ app.post('/api/users/addToOrders', (req, res) => {
 });
 
 // Combined route for car data with all filters
+// Combined route for car data with multiple selects for filters
 app.get('/api/cars', (req, res) => {
-  const { brand, model, color, type, status, min_ordered } = req.query;
+  const filters = req.query; // Extract all query parameters
+  let filteredCars = readCars(); // Read cars from JSON file
 
-  let filteredCars = readCars();
+  // Dynamically apply filters based on query parameters
+  filteredCars = filteredCars.filter(car => {
+    return Object.entries(filters).every(([key, value]) => {
+      if (!value) return true; // Skip keys with empty values (e.g., trailing '&')
 
-  // Apply filters based on query parameters
-  if (brand) {
-    filteredCars = filteredCars.filter(car => car.brand.toLowerCase() === brand.toLowerCase());
-  }
+      if (key === 'status') {
+        // Special handling for boolean 'status'
+        const statusBool = value.toLowerCase() === 'true';
+        return car.status === statusBool;
+      } else if (key === 'min_ordered') {
+        // Special handling for numerical 'min_ordered'
+        return car.ordered >= parseInt(value, 10);
+      } else if (car[key] !== undefined) {
+        // Handle "all" option: Ignore the filter if "all" is selected
+        if (value.toLowerCase() === 'all') return true;
 
-  if (model) {
-    filteredCars = filteredCars.filter(car => car.model.toLowerCase() === model.toLowerCase());
-  }
+        // Handle multiple values for a filter (e.g., "brand=chrysler,dodge")
+        const filterValues = value.split(',').map(v => v.toLowerCase());
+        return filterValues.includes(car[key].toString().toLowerCase());
+      }
+      return true; // Ignore unknown filter keys
+    });
+  });
 
-  if (color) {
-    filteredCars = filteredCars.filter(car => car.color.toLowerCase() === color.toLowerCase());
-  }
-
-  if (type) {
-    filteredCars = filteredCars.filter(car => car.type.toLowerCase() === type.toLowerCase());
-  }
-
-  if (status) {
-    const statusBool = status.toLowerCase() === 'true';
-    filteredCars = filteredCars.filter(car => car.status === statusBool);
-  }
-
-  if (min_ordered) {
-    filteredCars = filteredCars.filter(car => car.ordered >= parseInt(min_ordered, 10));
-  }
-
-  // Return the filtered cars
   res.json(filteredCars);
 });
 
-// Get car data by brand
-app.get('/api/cars/brands/:brand', (req, res) => {
-  const brand = req.params.brand.toLowerCase();
-  const carsByBrand = readCars().filter(car => car.brand.toLowerCase() === brand);
-
-  if (carsByBrand.length > 0) {
-    res.json(carsByBrand);
-  } else {
-    res.status(404).json({ error: 'Brand not found' });
-  }
-});
-
-// Get car data by model
-app.get('/api/cars/models/:model', (req, res) => {
-  const model = req.params.model.toLowerCase();
-  const carsByModel = readCars().filter(car => car.model.toLowerCase() === model);
-
-  if (carsByModel.length > 0) {
-    res.json(carsByModel);
-  } else {
-    res.status(404).json({ error: 'Model not found' });
-  }
-});
 
 // Get top ordered cars
 app.get('/api/cars/top-ordered', (req, res) => {
@@ -265,17 +239,14 @@ app.post('/api/users/return-car', (req, res) => {
   writeUsers(users);
   writeCars(cars);
 
-  res.status(200).json({ success: true, message: 'Car returned successfully' });
+  res.status(200).json({ success: true, message: 'Car returned successfully' , ordersHistory: user.orders });
 });
 
-// Endpoint to get a user's rented cars
-// Endpoint to get a user's rented cars
-// Endpoint to get rented cars
-// Endpoint to get rented cars history
-// Endpoint to get rented cars history with date filtering
+// Endpoint to get  rented cars
+
 app.get('/api/users/rented-cars', (req, res) => {
   const { username, role, startDate, endDate } = req.query;  // Extracting username, role, startDate, and endDate from query parameters
-
+  console.log(username,role,startDate,endDate);
   // Read users from the JSON file
   const users = readUsers();
 
@@ -297,17 +268,19 @@ app.get('/api/users/rented-cars', (req, res) => {
       });
     }
 
+    console.log('All Orders for Admin:', allOrdersHistory);
+
     return res.status(200).json({ ordersHistory: allOrdersHistory });
   }
 
-  // If the role is not admin, fetch the specific user's order history
+  // If the role is not admin (i.e., it is 'user'), fetch the specific user's order history
   const user = users.find(user => user.username.toLowerCase() === username.toLowerCase());  // Case insensitive comparison
 
   if (!user) {
     return res.status(404).json({ message: 'User not found' });
   }
 
-  let ordersHistory = user.orders;
+  let ordersHistory = user.orders; // Get the orders for the specific user
 
   // If startDate and endDate are provided, filter by date range
   if (startDate && endDate) {
@@ -318,6 +291,8 @@ app.get('/api/users/rented-cars', (req, res) => {
       return orderDate >= start && orderDate <= end;
     });
   }
+
+  console.log('User Orders:', ordersHistory);
 
   // Return the user's order history (all orders, including those that are returned)
   res.status(200).json({ ordersHistory });
@@ -358,7 +333,6 @@ app.post('/api/cars', (req, res) => {
   if (cars.some(car => car.carID === carID)) {
     return res.status(400).json({ message: 'Car with this ID already exists' });
   }
-
   // Create a new car object
   const newCar = { carID, brand, model, color, type, status, ordered };
 
@@ -370,6 +344,38 @@ app.post('/api/cars', (req, res) => {
 
   res.status(201).json({ message: 'Car added successfully', newCar });
 });
+
+// Endpoint to update car data by carID
+app.post('/api/cars/update', (req, res) => {
+  const { carID, ...updateFields } = req.body; // Extract carID and the fields to update
+
+  if (!carID) {
+    return res.status(400).json({ message: 'carID is required' });
+  }
+
+  // Read the current cars from the JSON file
+  const cars = readCars();
+
+  // Find the car by carID
+  const car = cars.find(car => car.carID === carID);
+
+  if (!car) {
+    return res.status(404).json({ message: 'Car not found' });
+  }
+
+  // Update the car object with the provided fields
+  Object.keys(updateFields).forEach(key => {
+    if (car.hasOwnProperty(key)) {
+      car[key] = updateFields[key];
+    }
+  });
+
+  // Write the updated cars array back to the JSON file
+  writeCars(cars);
+
+  res.status(200).json({ message: 'Car updated successfully', updatedCar: car });
+});
+
 
 // Start server
 app.listen(PORT, () => {

@@ -1,68 +1,87 @@
 import { useQuery } from "@tanstack/react-query";
-import { Alert, Carousel, Layout, Spin } from "antd";
+import { Alert, Card, Carousel, Layout, Spin } from "antd";
 import styled from "styled-components";
 
 const { Content } = Layout;
 
-// Styled content for the layout
-const StyledContent = styled(Content)`
+const HomeLayout = styled(Layout)`
+  background-color: white;
   position: fixed;
-  padding: 50px 20px;
+  top: 64px;
+  left: 200px;
+  right: 0;
+  bottom: 0;
+`;
+
+const HomeContent = styled(Content)`
+  position: fixed;
+  top: 70px;
+  left: 200px;
+  right: 0;
+  bottom: 0;
   background-color: #f9f9f9;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
-  overflow-y: hidden;
-  max-height: calc(100vh - 64px); // Ensure content area does not overlap with the fixed header
+  min-height: calc(100vh - 64px);
+  overflow-y: auto;
+
+  @media (max-width: 1024px) {
+    margin-left: 80px;
+  }
+
   @media (max-width: 768px) {
-    padding: 30px 10px;
+    margin-left: 0;
+    padding: 16px;
   }
 `;
 
-// Styled Carousel component
 const StyledCarousel = styled(Carousel)`
-background-color:  #364d79;
+  background-color: #364d79;
   width: 100%;
-  height:300px;
-  max-width: 1200px;  // Limit the carousel width to 1200px
+  max-width: 1200px;
   margin: 20px 0;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  min-height: 300px;
   
+
   .slick-slide {
     display: flex !important;
     justify-content: center;
     align-items: center;
   }
 
-  .slick-prev, .slick-next {
-    z-index: 1;  // Ensure arrows are visible on top of content
+  .slick-prev,
+  .slick-next {
+    z-index: 1;
     color: #ffffff;
   }
+`;
+const CarCard = styled(Card)`
+  width: 100%;
+  height: 100%;
+  margin-top:10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  overflow: hidden;
 
-  .slick-prev {
-    left: 10px;
-  }
-
-  .slick-next {
-    right: 10px;
+  .ant-card-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0; /* Remove default padding */
   }
 `;
 
-// Styled div for carousel item (not a card, just a simple div styled)
-const CarouselItem = styled.div`
+const CarImage = styled.img`
   width: 100%;
   height: 100%;
-  padding-top:125px;
-  background-color: #364d79;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-  margin: 0;
-  text-align: center;  // Centers the text horizontally
-  font-size: 24px;     // Adjust the font size as per your preference
+  object-fit: cover; /* Ensure the image scales properly */
+  border-radius: 8px;
 `;
 
 // Options for API fetch
@@ -85,37 +104,63 @@ const fetchTopCars = async () => {
 
 export default function Home() {
   const { data, error, isLoading } = useQuery({
-    queryKey: ['topcars'],
+    queryKey: ["topCars"],
     queryFn: fetchTopCars,
     enabled: true,
   });
 
+  // Display loading spinner until data is fully loaded
   if (isLoading) {
-    return <Spin tip="Loading..." />;
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <Spin tip="Loading..." size="large" />
+      </div>
+    );
   }
 
+  // Display error message if API call fails
   if (error) {
-    return <Alert message="Error" description="Failed to load top cars." type="error" />;
+    return (
+      <Alert
+        message="Error"
+        description="Failed to load top cars."
+        type="error"
+        showIcon
+      />
+    );
   }
 
-  // Ensure data is available before rendering the carousel
+  // Display warning if no data is returned
   if (!data || data.length === 0) {
-    return <Alert message="No Data" description="No top cars available at the moment." type="warning" />;
+    return (
+      <Alert
+        message="No Data"
+        description="No top cars available at the moment."
+        type="warning"
+        showIcon
+      />
+    );
   }
-
+  // Render the main content when data is available
   return (
-    <StyledContent>
-      <StyledCarousel autoplay autoplaySpeed={3000} arrows infinite>
-        {data?.map((car) => (
-          <div key={`${car.brand}-${car.model}`}>
-            <CarouselItem>
-              
-                {car.brand} - {car.model}
-              
-            </CarouselItem>
-          </div>
-        ))}
-      </StyledCarousel>
-    </StyledContent>
+    <HomeLayout>
+      <HomeContent>
+        <StyledCarousel autoplay autoplaySpeed={3000} arrows infinite>
+          {data.map((car) => (
+            <CarCard 
+              key={`${car.brand}-${car.model}`}  
+              cover={<CarImage src={`https://placehold.co/1100x280?text=${car.brand}-${car.model}`} />}>
+            </CarCard>
+          ))}
+        </StyledCarousel>
+      </HomeContent>
+    </HomeLayout>
   );
 }

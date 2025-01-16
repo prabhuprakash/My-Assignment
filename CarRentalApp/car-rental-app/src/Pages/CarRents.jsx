@@ -8,12 +8,17 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
 
-const StyledHeader = styled(Header)`
+const CarRentsLayout = styled(Layout)`
+  background-color: white;
+  height: 100%;
+`;
+const CarRentsHeader = styled(Header)`
   position: fixed;
-  margin-top: 0px;
+  top:64px;
   background: #ffffff;
   display: flex;
   justify-content: space-between;
+  gap:10px;
   align-items: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid #e0e0e0;
@@ -26,17 +31,10 @@ const StyledHeader = styled(Header)`
     padding: 20px;
     gap: 16px;
   }
-
-  .title {
-    font-size: 28px;
-    color: #333;
-    margin: 0;
-    font-weight: 600;
-  }
-
   .filters {
     display: flex;
-    gap: 16px;
+    justify-content: baseline;
+    gap: 10px;
     flex-grow: 1;
 
     @media (max-width: 768px) {
@@ -55,7 +53,7 @@ const StyledHeader = styled(Header)`
   }
 `;
 
-const StyledContent = styled(Content)`
+const CarRentsContent = styled(Content)`
   position: fixed;
   padding-top: 65px;
   width: 100%;
@@ -98,6 +96,11 @@ const StyledFlex = styled(Flex)`
   align-items: flex-start;
 `;
 
+const ButtonBar=styled.div`
+  display: flex;
+  flex-direction:row;
+  justify-content:space-between;
+`;
 const CarRentals = () => {
   const [cars, setCars] = useState([]);
   const [filters, setFilters] = useState({ brands: [], colors: [], types: [], models: [] });
@@ -107,11 +110,13 @@ const CarRentals = () => {
     color: '',
     type: '',
   });
-  const [hasWarned, setHasWarned] = useState(false); // Track warning state
   const [isRenting, setIsRenting] = useState(null); // State to track which car is being rented
   const [loading, setLoading] = useState(false);
   const [isAddCarModalVisible, setIsAddCarModalVisible] = useState(false); // Add Car Modal State
   const [newCar, setNewCar] = useState({}); // State to store new car data
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false); // State for Edit Modal visibility
+const [editCar, setEditCar] = useState({}); // State to hold the car data being edited
+
 
   const { logInState } = useContext(LogInContext);
 
@@ -141,13 +146,11 @@ const CarRentals = () => {
   useEffect(() => {
     if (logInState.type === "LogIn") {
       fetchCarsData();
-    } else {
-      if (!hasWarned) {
-        message.warning("You need to login.");
-        setHasWarned(true); // Ensure the warning shows only once
-      }
+    } 
+    else {
+      message.warning("You need to login.");
     }
-  }, [logInState, fetchCarsData, hasWarned]);
+  }, [logInState, fetchCarsData]);
 
   const handleFilterChange = (filterKey, value) => {
     setSelectedFilters((prev) => ({
@@ -155,6 +158,7 @@ const CarRentals = () => {
       [filterKey]: value,
     }));
   };
+  
   const handleAddCar = () => {
     setIsAddCarModalVisible(true);
   };
@@ -191,6 +195,41 @@ const CarRentals = () => {
   const handleAddCarCancel = () => {
     setIsAddCarModalVisible(false);
   };
+
+  const handleEditClick = (car) => {
+    setEditCar({ ...car }); // Set the selected car data for editing
+    setIsEditModalVisible(true); // Open the Edit Modal
+  };
+  
+  console.log(editCar);
+  const handleEditSubmit = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/cars/update`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editCar),
+      });
+      const result = await response.json();
+  
+      if (response.ok) {
+        message.success('Car updated successfully!');
+        fetchCarsData(); // Refresh the car list
+        setIsEditModalVisible(false); // Close the modal
+      } else {
+        message.error(result.message || 'Failed to update the car');
+      }
+    } catch (error) {
+      message.error('Error updating the car');
+      console.error(error);
+    }
+  };
+  
+  const handleEditCancel = () => {
+    setIsEditModalVisible(false); // Close the modal without saving
+  };
+  
   const handleDelete = async (car) => {
     try {
       const response = await fetch(`http://localhost:5000/api/cars/${car.carID}`, {
@@ -254,66 +293,70 @@ const CarRentals = () => {
   }
 
   return (
-    <>
-      <StyledHeader>
-        <Title className="title" level={2}>
+    <CarRentsLayout>
+      <CarRentsHeader>
+        <Title  level={2}>
           Car Rentals
         </Title>
         <div className="filters">
           <Select
             placeholder="Select Brand"
+            mode="multiple" 
+            maxTagCount="responsive"
             onChange={(value) => handleFilterChange('brand', value)}
             style={{ width: 200 }}
-            value={selectedFilters.brand}
-          >
-            <Option value="">All Brands</Option>
-            {filters.brands.map((brand, index) => (
-              <Option key={index} value={brand}>
-                {brand}
-              </Option>
-            ))}
-          </Select>
-
+            options={[
+              ...filters.brands.map(brand => ({
+                value: brand,
+                label: <span>{brand}</span>,
+              }))
+            ]}
+          />
+           
           <Select
             placeholder="Select Model"
+            mode="multiple"
+            maxTagCount="responsive"
             onChange={(value) => handleFilterChange('model', value)}
             style={{ width: 200 }}
-            value={selectedFilters.model}
+            options={[
+              ...filters.models.map(model => ({
+                value: model,
+                label: <span>{model}</span>,
+              }))
+            ]}
           >
-            <Option value="">All Models</Option>
-            {filters.models.map((model, index) => (
-              <Option key={index} value={model}>
-                {model}
-              </Option>
-            ))}
           </Select>
 
           <Select
             placeholder="Select Color"
+            mode="multiple"
+            maxTagCount="responsive"
             onChange={(value) => handleFilterChange('color', value)}
             style={{ width: 200 }}
-            value={selectedFilters.color}
+            options={[
+              ...filters.colors.map(color => ({
+                value: color,
+                label: <span>{color}</span>,
+              }))
+            ]}
           >
-            <Option value="">All Colors</Option>
-            {filters.colors.map((color, index) => (
-              <Option key={index} value={color}>
-                {color}
-              </Option>
-            ))}
           </Select>
 
           <Select
             placeholder="Select Type"
+            mode="multiple"
+            maxTagCount="responsive"
             onChange={(value) => handleFilterChange('type', value)}
             style={{ width: 200 }}
-            value={selectedFilters.type}
+            options={[
+              ...filters.types.map(type => ({
+                value: type,
+                label: <span>{type}</span>,
+              }))
+            ]}
           >
-            <Option value="">All Types</Option>
-            {filters.types.map((type, index) => (
-              <Option key={index} value={type}>
-                {type}
-              </Option>
-            ))}
+           
           </Select>
 
           <Button
@@ -326,15 +369,15 @@ const CarRentals = () => {
           {logInState.role === "admin" && <Button onClick={handleAddCar}>Add Car</Button>}
           
         </div>
-      </StyledHeader>
+      </CarRentsHeader>
 
-      <StyledContent>
+      <CarRentsContent>
         <StyledFlex>
           {cars.length > 0 ? (
             cars.map((car, index) => (
-              <CarCard key={index} hoverable cover={<CarImage src={`https://via.placeholder.com/300x200?text=${car.brand}`} />}>
+              <CarCard key={index} hoverable cover={<CarImage src={`https://placehold.co/300x200?text=${car.brand}`} />}>
                 <Title level={4}>
-                  {car.brand} {car.model}
+                  {car.brand} - {car.model}
                 </Title>
                 <Text>Color: {car.color}</Text>
                 <br />
@@ -342,19 +385,29 @@ const CarRentals = () => {
                 <br />
                 <Text>Status: {car.status ? 'Available' : 'Unavailable'}</Text>
                 <br />
-                {logInState.role==="admin"?(<Button
+                {logInState.role==="admin"?(
+                  <ButtonBar>
+                  <Button
                   type="primary"
+                  disabled={!car.status}
+                  onClick={() => handleEditClick(car)}
+                >
+                  Edit
+                </Button>
+                  <Button
+                  type="primary"
+                  disabled={!car.status}
                   onClick={() => handleDelete(car)}
                 >
                   Delete
-                </Button>):(<Button
+                </Button></ButtonBar>):(<ButtonBar><Button
                   type="primary"
                   disabled={!car.status} // Disable if car is not available
                   loading={isRenting?.id === car.id && loading}
                   onClick={() => handleRentClick(car)}
                 >
                   Rent
-                </Button>)}
+                </Button></ButtonBar>)}
                 
               </CarCard>
             ))
@@ -362,7 +415,7 @@ const CarRentals = () => {
             <Text>No cars found</Text>
           )}
         </StyledFlex>
-      </StyledContent>
+      </CarRentsContent>
       <Modal
   title="Add New Car"
   open={isAddCarModalVisible}
@@ -387,8 +440,48 @@ const CarRentals = () => {
     </Form.Item>
   </Form>
 </Modal>
+<Modal
+  title="Edit Car"
+  open={isEditModalVisible}
+  onOk={handleEditSubmit}
+  onCancel={handleEditCancel}
+>
+  <Form layout="vertical">
+    <Form.Item label="Brand">
+      <Input
+        value={editCar.brand || ''}
+        onChange={(e) => setEditCar({ ...editCar, brand: e.target.value })}
+      />
+    </Form.Item>
+    <Form.Item label="Model">
+      <Input
+        value={editCar.model || ''}
+        onChange={(e) => setEditCar({ ...editCar, model: e.target.value })}
+      />
+    </Form.Item>
+    <Form.Item label="Car ID">
+      <Input
+        value={editCar.carID || ''}
+        disabled // Car ID is non-editable
+      />
+    </Form.Item>
+    <Form.Item label="Color">
+      <Input
+        value={editCar.color || ''}
+        onChange={(e) => setEditCar({ ...editCar, color: e.target.value })}
+      />
+    </Form.Item>
+    <Form.Item label="Type">
+      <Input
+        value={editCar.type || ''}
+        onChange={(e) => setEditCar({ ...editCar, type: e.target.value })}
+      />
+    </Form.Item>
+  </Form>
+</Modal>
 
-    </>
+
+    </CarRentsLayout>
   );
 };
 
