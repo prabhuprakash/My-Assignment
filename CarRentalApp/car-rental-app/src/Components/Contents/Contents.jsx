@@ -51,9 +51,18 @@ export default function Contents() {
   ];
   
   useEffect(() => {
-    const activeItem = menuItems.find((item) => location.pathname === item.path);
-    if (activeItem) setSelectedKey(activeItem.key);
-  }, [location]);
+    if(logInState.type==="LogOut"){
+      const activeItem = menuItems.find((item) => item.key==="home");
+      if (activeItem) {
+        navigate(activeItem.path);
+        setSelectedKey(activeItem.key);
+      }
+    }
+    else{
+      const activeItem = menuItems.find((item) => location.pathname === item.path);
+      if (activeItem) setSelectedKey(activeItem.key);
+    }
+  }, [location,logInState.type]);
 
   const handleMenuClick = ({ key }) => {
     const selectedItem = menuItems.find((item) => item.key === key);

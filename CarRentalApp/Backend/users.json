@@ -132,6 +132,13 @@
           "returnStatus": true
         }
       ]
+    },
+    {
+      "username": "dpp",
+      "password": "1234",
+      "mobile": "4444444444",
+      "role": "user",
+      "orders": []
     }
   ]
 }

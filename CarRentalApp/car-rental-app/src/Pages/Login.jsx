@@ -5,22 +5,7 @@ export default function Login({ onClose }) {
   const {dispatchLogIn}=useContext(LogInContext);
   const [form] = Form.useForm();
 
-  // Function to send login data to the server
-  async function postLoginData(values) {
-    try {
-      const response = await fetch('http://localhost:5000/login', {
-        method: 'POST',
-        body: JSON.stringify(values),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const resData = await response.json();
-      return resData.message;
-    } catch (error) {
-      throw error;
-    }
-  }
+  
 
   const handleOk = async () => {
     try {
