@@ -68,12 +68,8 @@ const H2 = styles.h2`
 
     const addMutation = useMutation({
         mutationFn: async (newTask) => {
-            const response = await fetch("http://localhost:8080/addtask", {
+            const response = await fetch(`http://localhost:8080/addtask/${newTask}`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json", 
-                },
-                body: JSON.stringify(newTask),
             });
             if (!response.ok) {
                 throw new Error("Error adding task");
@@ -152,7 +148,7 @@ const H2 = styles.h2`
               });
             //alert();
         } else {
-            addMutation.mutate({ taskName: updatedTaskName, completed: false });
+            addMutation.mutate(updatedTaskName);
         }
         setTaskName('');
     };

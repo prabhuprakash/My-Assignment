@@ -54,13 +54,13 @@ export function TaskAdder({ removeTask,handleCheckboxChange }) {
     }
     return (
         <>
-            {data && data.map((task,index) => (
+            {data ? data.map((task,index) => (
                 <TaskContainer key={`${task.taskName}-${index}`} $index={index}>
                     <TaskText>{task.taskName}</TaskText>
                     <CheckboxButton type="checkbox" defaultChecked={task.completed} onChange={(event) => handleCheckboxChange(task.taskName, event.target.checked)} />
                     <RemoveButton onClick={() => removeTask(task.taskName)}>Remove</RemoveButton>
                 </TaskContainer>
-            ))}
+            )):<TaskContainer></TaskContainer>}
         </>
     );
 }
