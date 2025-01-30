@@ -23,7 +23,6 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, String> claims = new HashMap<>();
-        claims.put("iss", "https://secure.genuinecoder.com");
         return Jwts.builder()
                 .claims(claims)
                 .subject(userDetails.getUsername())
