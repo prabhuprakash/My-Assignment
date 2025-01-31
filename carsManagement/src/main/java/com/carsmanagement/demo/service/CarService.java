@@ -2,19 +2,23 @@ package com.carsmanagement.demo.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.carsmanagement.demo.dto.CarDTO;
+import com.carsmanagement.demo.dto.CarFeatureDTO;
 import com.carsmanagement.demo.mapper.CarMapper;
 import com.carsmanagement.demo.model.Car;
 import com.carsmanagement.demo.model.Dealership;
+import com.carsmanagement.demo.model.Feature;
 import com.carsmanagement.demo.model.Owner;
 import com.carsmanagement.demo.repository.CarRepository;
 import com.carsmanagement.demo.repository.DealershipRepository;
+import com.carsmanagement.demo.repository.FeatureRepository;
 import com.carsmanagement.demo.repository.OwnerRepository;
 
 @Service
@@ -29,11 +33,14 @@ public class CarService {
 	@Autowired
 	OwnerRepository ownerRepository;
 	
-	public List<CarDTO> getAllCars(){
-		List<Car> cars = carRepository.findAll();
-		return cars.stream()
-				   .map(CarMapper.carMapper::toCarDTO)
-				   .collect(Collectors.toList());
+	@Autowired
+	FeatureRepository featureRepository;
+	
+	public Page<CarDTO> getAllCars(Pageable pageable){
+		Page<Car> cars = carRepository.findAll(pageable);
+	
+		return cars.map(CarMapper.carMapper::toCarDTO);
+			   
 	}
 	
 	public ResponseEntity<String> addCar(CarDTO carDTO) {
@@ -68,5 +75,33 @@ public class CarService {
 	   }
 	   else 
 		   return ResponseEntity.badRequest().body("Dealership not found");
+	}
+	
+	public ResponseEntity<String> upgradeCar(CarFeatureDTO carFeatureDTO) {
+		try {
+			// Find the car
+			Optional<Car> optionalCar = carRepository.findById(carFeatureDTO.getCarId());
+			if (!optionalCar.isPresent()) {
+				return ResponseEntity.badRequest().body("Car not found with ID: " + carFeatureDTO.getCarId());
+			}
+			
+			Car car = optionalCar.get();
+			
+			// Find all features
+			List<Feature> features = featureRepository.findAllById(carFeatureDTO.getFeatureIds());
+			if (features.isEmpty()) {
+				return ResponseEntity.badRequest().body("No valid features found");
+			}
+			
+			// Add features to car
+			car.getFeatures().addAll(features);
+			
+			// Save the updated car
+			carRepository.save(car);
+			
+			return ResponseEntity.ok("Car features updated successfully");
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Error updating car features: " + e.getMessage());
+		}
 	}
 }

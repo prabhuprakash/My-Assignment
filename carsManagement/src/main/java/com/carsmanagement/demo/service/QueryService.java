@@ -8,9 +8,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.carsmanagement.demo.dto.CarInformationDTO;
+import com.carsmanagement.demo.dto.GetOwnedCarsDTO;
+import com.carsmanagement.demo.dto.GetSalesRecords;
 import com.carsmanagement.demo.repository.QueryRepository;
 
 @Service
@@ -20,15 +25,15 @@ public class QueryService {
 	QueryRepository queryRepository;
 	
 	public ResponseEntity<LinkedHashMap<String , Long>> getSalesRecords() {
-		List<Object[]> salesRecords = queryRepository.getSalesRecords();
+		List<GetSalesRecords> salesRecords = queryRepository.getSalesRecords();
 		
 		if (salesRecords == null || salesRecords.isEmpty()) {
 	        return ResponseEntity.noContent().build();  
 	    }
 		LinkedHashMap<String,Long> mapSalesRecords= salesRecords.stream()
         .collect(Collectors.toMap(
-            record -> (String) record[0], 
-            record -> (Long) record[1],
+            record -> record.getDealershipName(), 
+            record -> record.getCarsSold(),
             (existing, replacement) -> existing,
             LinkedHashMap::new
         ));
@@ -37,13 +42,13 @@ public class QueryService {
 	}
 	
 	public ResponseEntity<List<Map<String, Object>>> getOwnedCars() {
-	    List<Object[]> ownedCars = queryRepository.getOwnedCars();
+	    List<GetOwnedCarsDTO> ownedCars = queryRepository.getOwnedCars();
 	    Map<String, Map<String, List<String>>> ownerCarsMap = new LinkedHashMap<>();
 
-	    for (Object[] record : ownedCars) {
-	        String ownerName = (String) record[0];
-	        String phoneNumber = (String) record[1];
-	        String carDetails = (String) record[2]; 
+	    for (GetOwnedCarsDTO record : ownedCars) {
+	        String ownerName = record.getOwnername();
+	        String phoneNumber = record.getPhoneNumber();
+	        String carDetails = record.getCar(); 
 	        // Use ownerName and phoneNumber as a composite key in the map
 	        String key = ownerName + "_" + phoneNumber;
 
@@ -65,5 +70,9 @@ public class QueryService {
 	    }
 
 	    return ResponseEntity.ok(responseList);
+	}
+	public Page<CarInformationDTO> getCarsInformation(Pageable pageable){
+		return queryRepository.getCarsInformation(pageable);
+		
 	}
 }
