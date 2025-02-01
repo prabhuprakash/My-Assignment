@@ -18,10 +18,13 @@ public class OwnersService {
 	@Autowired
 	OwnerRepository repo;
 	
+	@Autowired
+	private OwnerMapper ownerMapper;
+	
 	public List<OwnerDTO> getAllOwners(){
 		List<Owner> owners =repo.findAll(); 
 		return owners.stream()
-					 .map(OwnerMapper.ownerMapper::toOwnerDTO)
+					 .map(ownerMapper::toOwnerDTO)
 					 .collect(Collectors.toList());
 	}
 	
@@ -29,7 +32,7 @@ public class OwnersService {
 		if (repo.existsByPhoneNumber(ownerDTO.getPhoneNumber())) {
             return ResponseEntity.badRequest().body("Phone number is already registered");
         }
-		repo.save(OwnerMapper.ownerMapper.toOwner(ownerDTO));
+		repo.save(ownerMapper.toOwner(ownerDTO));
 		return ResponseEntity.ok("Owner created Successfully");
 	}
 }
