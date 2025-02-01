@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.carsmanagement.demo.dto.CarInformationDTO;
 import com.carsmanagement.demo.dto.GetOwnedCarsDTO;
-import com.carsmanagement.demo.dto.GetSalesRecords;
+import com.carsmanagement.demo.dto.DealershipSalesDTO;
 import com.carsmanagement.demo.repository.QueryRepository;
 
 @Service
@@ -25,7 +25,7 @@ public class QueryService {
 	QueryRepository queryRepository;
 	
 	public ResponseEntity<LinkedHashMap<String , Long>> getSalesRecords() {
-		List<GetSalesRecords> salesRecords = queryRepository.getSalesRecords();
+		List<DealershipSalesDTO> salesRecords = queryRepository.getSalesRecords();
 		
 		if (salesRecords == null || salesRecords.isEmpty()) {
 	        return ResponseEntity.noContent().build();  
@@ -46,7 +46,7 @@ public class QueryService {
 	    Map<String, Map<String, List<String>>> ownerCarsMap = new LinkedHashMap<>();
 
 	    for (GetOwnedCarsDTO record : ownedCars) {
-	        String ownerName = record.getOwnername();
+	        String ownerName = record.getOwnerName();
 	        String phoneNumber = record.getPhoneNumber();
 	        String carDetails = record.getCar(); 
 	        // Use ownerName and phoneNumber as a composite key in the map

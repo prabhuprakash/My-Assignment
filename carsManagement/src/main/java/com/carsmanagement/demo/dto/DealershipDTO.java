@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class DealershipDTO {
-	private String Name;
+	private String name;
 	private String phone;
-	private String Location;
+	private String location;
 }

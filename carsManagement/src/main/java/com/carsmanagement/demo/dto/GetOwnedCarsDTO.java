@@ -1,12 +1,12 @@
 package com.carsmanagement.demo.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
 public class GetOwnedCarsDTO {
-  private String Ownername;
+  private String ownerName;
   private String phoneNumber;
   private String car;
 }

@@ -36,27 +36,30 @@ public class CarService {
 	@Autowired
 	FeatureRepository featureRepository;
 	
+	@Autowired
+	CarMapper carMapper;
+	
 	public Page<CarDTO> getAllCars(Pageable pageable){
+		if (pageable == null) {
+			throw new IllegalArgumentException("Pageable must not be null");
+		}
 		Page<Car> cars = carRepository.findAll(pageable);
 	
-		return cars.map(CarMapper.carMapper::toCarDTO);
+		return cars.map(carMapper::toCarDTO);
 			   
 	}
 	
 	public ResponseEntity<String> addCar(CarDTO carDTO) {
-	    
-	    if (carDTO.getDealership() == null || carDTO.getDealership().getDealershipId() == 0) {
+	   
+	    if (carDTO.getDealership() == null || !dealershipRepository.existsByName(carDTO.getDealership().getName())) {
 	        return ResponseEntity.badRequest().body("Dealership is mandatory for adding a car");
 	    }
+			
+	    Car car = carMapper.toCar(carDTO);
 
-	    Car car = CarMapper.carMapper.toCar(carDTO);
-	    
-	    Optional<Dealership> dealership = dealershipRepository.findById(car.getDealership().getDealershipId());
+	    Optional<Dealership> dealership = dealershipRepository.findByName(carDTO.getDealership().getName());
 	   if(dealership.isPresent()) {
 		   car.setDealership(dealership.get());
-	    
-		   //Optional<Owner> owner = Optional.of(car.getOwner());
-	    
 		   if (car.getOwner()!= null) {
 			   if (car.getOwner().getOwnerId() == 0) {
 				   ownerRepository.save(car.getOwner());
@@ -67,7 +70,7 @@ public class CarService {
 					   return ResponseEntity.badRequest().body("Owner not found.");
 				   car.setOwner(existingOwner.get());
 			   }
-			   
+
 		   }
 		   // Save the car
 		   car = carRepository.save(car);
@@ -78,30 +81,19 @@ public class CarService {
 	}
 	
 	public ResponseEntity<String> upgradeCar(CarFeatureDTO carFeatureDTO) {
-		try {
-			// Find the car
-			Optional<Car> optionalCar = carRepository.findById(carFeatureDTO.getCarId());
-			if (!optionalCar.isPresent()) {
-				return ResponseEntity.badRequest().body("Car not found with ID: " + carFeatureDTO.getCarId());
-			}
-			
-			Car car = optionalCar.get();
-			
-			// Find all features
-			List<Feature> features = featureRepository.findAllById(carFeatureDTO.getFeatureIds());
-			if (features.isEmpty()) {
-				return ResponseEntity.badRequest().body("No valid features found");
-			}
-			
-			// Add features to car
-			car.getFeatures().addAll(features);
-			
-			// Save the updated car
-			carRepository.save(car);
+		Optional<Car> optionalCar = carRepository.findById(carFeatureDTO.getCarId());
+		if (!optionalCar.isPresent()) {
+			return ResponseEntity.badRequest().body("Car not found with ID: " + carFeatureDTO.getCarId());
+		}	
+		Car car = optionalCar.get();		
+		List<Feature> features = featureRepository.findAllById(carFeatureDTO.getFeatureIds());
+		if (features.isEmpty()) {
+			return ResponseEntity.badRequest().body("No valid features found");
+		}
+		car.getFeatures().addAll(features);
+		carRepository.save(car);
 			
 			return ResponseEntity.ok("Car features updated successfully");
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("Error updating car features: " + e.getMessage());
-		}
+
 	}
 }

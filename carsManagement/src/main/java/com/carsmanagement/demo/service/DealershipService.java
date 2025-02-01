@@ -17,10 +17,13 @@ public class DealershipService {
 	
 	@Autowired
 	DealershipRepository dealershipRepo;
+
+	@Autowired
+	DealershipMapper dealershipMapper;
 	public List<DealershipDTO> getAllDealership(){
 		List<Dealership> dealerships = dealershipRepo.findAll();			
 		return dealerships.stream()
-						  .map(DealershipMapper.dealershipMapper::toDealershipDTO)
+						  .map(dealershipMapper::toDealershipDTO)
 						  .collect(Collectors.toList());
 	}
 	
@@ -28,7 +31,7 @@ public class DealershipService {
 		if (dealershipRepo.existsByPhone(dealershipDTO.getPhone())) {
             return ResponseEntity.badRequest().body("Phone number is already registered");
         }
-		dealershipRepo.save(DealershipMapper.dealershipMapper.toDealership(dealershipDTO));
+		dealershipRepo.save(dealershipMapper.toDealership(dealershipDTO));
 		return ResponseEntity.ok("dealership created Successfully");
 	}
 }

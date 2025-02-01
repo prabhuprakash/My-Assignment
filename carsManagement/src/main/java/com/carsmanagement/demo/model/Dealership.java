@@ -25,6 +25,7 @@ public class Dealership {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int dealershipId;
+	@Column(unique = true)
 	private String name;
 	@Column(unique = true)
 	private String phone;

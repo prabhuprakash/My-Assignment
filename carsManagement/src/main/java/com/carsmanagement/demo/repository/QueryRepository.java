@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.carsmanagement.demo.dto.CarInformationDTO;
 import com.carsmanagement.demo.dto.GetOwnedCarsDTO;
-import com.carsmanagement.demo.dto.GetSalesRecords;
+import com.carsmanagement.demo.dto.DealershipSalesDTO;
 import com.carsmanagement.demo.model.Dealership;
 
 @Repository
@@ -22,7 +22,7 @@ public interface QueryRepository extends JpaRepository<Dealership, Integer> {
 	        "LEFT JOIN owners o ON c.owner_id = o.owner_id " +
 	        "GROUP BY d.name " + "ORDER BY COUNT(c.car_id) DESC", 
 	        nativeQuery = true)
-	List<GetSalesRecords> getSalesRecords();
+	List<DealershipSalesDTO> getSalesRecords();
 	
 	@Query(value="Select CONCAT(owners.first_name, ' ', owners.last_name),owners.phone_number, CONCAT(cars.brand,' ',cars.model) from owners left join cars on owners.owner_id=cars.owner_id  group by owners.owner_id,brand,model", nativeQuery = true)
 	List<GetOwnedCarsDTO>getOwnedCars();

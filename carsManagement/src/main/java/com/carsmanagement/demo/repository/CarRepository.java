@@ -7,5 +7,5 @@ import com.carsmanagement.demo.model.Car;
 
 @Repository
 public interface CarRepository extends JpaRepository<Car, Integer>{
-
+  
 }

@@ -14,11 +14,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-
-
 
 @RestController
 @RequestMapping("/features")
@@ -27,18 +25,17 @@ public class FeatureController {
   @Autowired
   FeatureService featureService;
   @GetMapping("/all")
-  public Page<FeatureDTO> getAllCars(@PageableDefault(size = 20,sort = "featureId",direction = Sort.Direction.ASC ) Pageable pageable){
-		return featureService.getAllCars(pageable);
+  public Page<FeatureDTO> getAllCarFeatures(@PageableDefault(size = 20,sort = "featureId",direction = Sort.Direction.ASC ) Pageable pageable){
+		return featureService.getAllCarFeatures(pageable);
 	}
   @PostMapping("/addfeature")
   public ResponseEntity<String> addFeature(@RequestBody FeatureDTO featureDTO) {
-		    return featureService.addFeature(featureDTO);
+	  return featureService.addFeature(featureDTO);
 	}
   
-  @DeleteMapping("/removefeature")
-  public ResponseEntity<String> removeFeature(@RequestBody FeatureDTO featureDTO) {
-       
-      return featureService.removeFeature(featureDTO);
+  @DeleteMapping("/removefeature/{featureName}")
+  public ResponseEntity<String> removeFeature(@PathVariable String featureName) {
+    return featureService.removeFeature(featureName);
   }
   
 }

@@ -35,6 +35,12 @@ public class CarController {
 
 	@PostMapping("/upgradecar")
 	public ResponseEntity<String> upgradeCar(@RequestBody CarFeatureDTO carFeatureDTO ){
+		if (carFeatureDTO == null || carFeatureDTO.getCarId() <= 0) {
+			return ResponseEntity.badRequest().body("Invalid car ID");
+		}
+		if (carFeatureDTO.getFeatureIds() == null || carFeatureDTO.getFeatureIds().isEmpty()) {
+		  return ResponseEntity.badRequest().body("No features specified");
+		}
 		return carService.upgradeCar(carFeatureDTO);
 	}
 }
